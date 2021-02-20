@@ -4,22 +4,25 @@
       <v-card-title class="headline">
         <strong
           >{{ stock.name }}
-          <small>(preço: {{ stock.price }} | {{ stock.quantity }})</small>
+          <small>(preço: {{ stock.price | currency}} | {{ stock.quantity }})</small>
         </strong>
       </v-card-title>
     </v-card>
     <v-card>
       <v-container fill-height>
         <v-text-field
+          :error="insufficientQuantity"
           label="Quantidade"
           type="number"
           v-model.number="quantity"
         ></v-text-field>
         <v-btn
           class="blue darken-3 white--text"
-          :disabled="quantity <= 0 || !Number.isInteger(quantity)"
+          :disabled="
+            quantity <= 0 || !Number.isInteger(quantity) || insufficientQuantity
+          "
           @click="sellStock"
-          >Vender</v-btn
+          >{{ insufficientQuantity ? "Insuficiente" : "Vender" }}</v-btn
         >
       </v-container>
     </v-card>
@@ -27,8 +30,7 @@
 </template>
 
 <script>
-
-import  {mapActions} from 'vuex'
+import { mapActions } from "vuex";
 
 export default {
   props: ["stock"],
@@ -37,15 +39,29 @@ export default {
       quantity: 0,
     };
   },
+  watch: {
+    quantity() {
+      if (this.quantity < 0) {
+        setTimeout(() => {
+          this.quantity = 0;
+        }, 1);
+      }
+    },
+  },
+  computed: {
+    insufficientQuantity() {
+      return this.quantity > this.stock.quantity;
+    },
+  },
   methods: {
-    ...mapActions({sellStockAction: 'sellStock'}),
+    ...mapActions({ sellStockAction: "sellStock" }),
     sellStock() {
       const order = {
         stockId: this.stock.id,
         stockPrice: this.stock.price,
         quantity: this.quantity,
       };
-      this.sellStockAction(order)
+      this.sellStockAction(order);
       //this.$store.dispatch("sellStock", order);
       this.quantity = 0;
     },

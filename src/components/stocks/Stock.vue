@@ -3,13 +3,14 @@
     <v-card class="green darken-3 white--text">
       <v-card-title class="headline">
         <strong
-          >{{ stock.name }} <small>(preço: {{ stock.price }})</small></strong
+          >{{ stock.name }} <small>(preço: {{ stock.price | currency }})</small></strong
         >
       </v-card-title>
     </v-card>
     <v-card>
       <v-container fill-height>
         <v-text-field
+          :error="insufficientFunds"
           label="Quantidade"
           type="number"
           v-model.number="quantity"
@@ -36,13 +37,13 @@ export default {
     };
   },
   watch: {
-    quantity(){
-      if(this.quantity < 0) {
-        setTimeout(_ => {
-          this.quantity = 0
-        },1)
+    quantity() {
+      if (this.quantity < 0) {
+        setTimeout(() => {
+          this.quantity = 0;
+        }, 1);
       }
-    }
+    },
   },
   computed: {
     funds() {
