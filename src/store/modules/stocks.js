@@ -6,20 +6,28 @@ export default {
         stocks: []
     },
     mutations: {
-        setStocks(state, stocks){
+        setStocks(state, stocks) {
             state.stocks = stocks
+        },
+        randomizeStocks(state) {
+            for (let stock of state.stocks) {
+                stock.price = Math.round(stock.price * (1 + Math.random() - 0.45))
+            }
         }
     },
     actions: {
-        buyStock({commit}, order){
+        buyStock({ commit }, order) {
             commit('buyStock', order)
         },
-        initStocks({commit}){
+        initStocks({ commit }) {
             commit('setStocks', stocks)
+        },
+        randomizeStocks({ commit }) {
+            commit('randomizeStocks')
         }
     },
     getters: {
-        stocks(state){
+        stocks(state) {
             return state.stocks
         }
     }
